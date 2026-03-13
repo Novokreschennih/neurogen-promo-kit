@@ -108,18 +108,6 @@
           </button>
         </div>
 
-        <!-- Прогресс до следующего уровня -->
-        <div class="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xs font-bold text-yellow-400">🎯 Прогресс до PRO</span>
-            <span id="progressText" class="text-xs text-gray-400">0/10</span>
-          </div>
-          <div class="w-full bg-gray-700 rounded-full h-2">
-            <div id="progressBar" class="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-          <p class="text-xs text-gray-500 mt-2">Приведи 10 активных партнёров для повышения комиссии до 50%</p>
-        </div>
-
         <!-- Готовые посты -->
         <div class="mb-4 text-center">
           <h2 class="text-lg font-bold">📝 Готовые посты</h2>
@@ -336,16 +324,9 @@
           document.getElementById('userAvatar').style.backgroundImage = 'none';
         }
 
-        // Статистика (заглушка — потом заменить на реальные данные)
-        document.getElementById('statClicks').textContent = userData?.clicks || Math.floor(Math.random() * 50);
-        document.getElementById('statEarnings').textContent = '$' + (userData?.earnings || (Math.random() * 200).toFixed(2));
-
-        // Прогресс
-        const current = userData?.referrals || Math.floor(Math.random() * 10);
-        const target = 10;
-        const percent = Math.min((current / target) * 100, 100);
-        document.getElementById('progressBar').style.width = percent + '%';
-        document.getElementById('progressText').textContent = `${current}/${target}`;
+        // Статистика (строго по данным с сервера)
+        document.getElementById('statClicks').textContent = userData?.clicks || 0;
+        document.getElementById('statEarnings').textContent = '$' + (userData?.earnings || "0.00");
 
         // Генерация QR-кода
         generateQR(botUrl);
