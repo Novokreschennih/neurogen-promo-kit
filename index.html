@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Promo-Kit | NeuroGen</title>
+    <title>Promo-Kit | NeuroGen Partner</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
+
     <style>
       body {
-        background-color: #0f172a; /* gray-900 */
+        background-color: #0f172a;
         color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       }
@@ -24,64 +24,219 @@
         border-radius: 1rem;
         display: inline-block;
       }
-      /* Скрываем скроллбар для красоты */
       ::-webkit-scrollbar { width: 0px; }
+      
+      /* Анимация загрузки */
+      .loading-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      /* Карточка статистики */
+      .stat-card {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
     </style>
   </head>
   <body class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black pb-12">
-    
+
+    <!-- Header -->
     <header class="p-5 border-b border-gray-800 bg-gray-900/80 backdrop-blur-md sticky top-0 z-10">
-      <div class="flex items-center justify-center">
-        <h1 class="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
-          ⚡️ NEUROGEN PROMO-KIT
-        </h1>
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-lg font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+            ⚡️ NEUROGEN
+          </h1>
+          <p class="text-xs text-gray-400">Partner Dashboard</p>
+        </div>
+        <div id="userAvatar" class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-lg font-bold">
+          👤
+        </div>
       </div>
     </header>
 
     <div class="p-5 max-w-md mx-auto">
-      
-      <div class="bg-gray-800 rounded-2xl p-6 text-center neon-border mb-6">
-        <h2 class="text-sm font-bold text-gray-400 uppercase mb-4 tracking-wider">Твой уникальный QR-код</h2>
-        
-        <div class="flex justify-center mb-4">
-          <div id="qrcode" class="qr-container"></div>
-        </div>
-        
-        <p class="text-xs text-purple-300 mb-4" id="botLinkDisplay">Загрузка ссылки...</p>
-        
-        <button id="downloadQrBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
-          <span>📥</span> СКАЧАТЬ В ГАЛЕРЕЮ
-        </button>
+
+      <!-- Блок загрузки -->
+      <div id="loadingBlock" class="bg-gray-800 rounded-2xl p-6 text-center neon-border mb-6">
+        <div class="animate-spin inline-block w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mb-3"></div>
+        <p class="text-sm text-gray-400 loading-pulse">Генерация вашей партнёрской ссылки...</p>
       </div>
 
-      <div class="mb-4 text-center">
-        <h2 class="text-lg font-bold">Готовые посты</h2>
-        <p class="text-xs text-gray-400">Скопируй и опубликуй в Stories или на канале</p>
-      </div>
+      <!-- Основной контент (скрыт до загрузки) -->
+      <div id="mainContent" class="hidden">
 
-      <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-bold text-cyan-400 bg-cyan-900/30 px-2 py-1 rounded">Интрига (Stories)</span>
-          <button onclick="copyText('post1', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+        <!-- Статистика -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+          <div class="stat-card rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase">Переходы</p>
+            <p id="statClicks" class="text-2xl font-bold text-cyan-400">0</p>
+          </div>
+          <div class="stat-card rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase">Доход</p>
+            <p id="statEarnings" class="text-2xl font-bold text-purple-400">$0</p>
+          </div>
         </div>
-        <p id="post1" class="text-sm text-gray-300">Пока все обсуждают нейросети, я собрал себе ИИ-клона, который работает на меня 24/7. Заходи потестить, как он общается: <br><span class="bot-link text-purple-400"></span></p>
-      </div>
 
-      <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-bold text-purple-400 bg-purple-900/30 px-2 py-1 rounded">Для бизнеса (Пост)</span>
-          <button onclick="copyText('post2', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
-        </div>
-        <p id="post2" class="text-sm text-gray-300">Я устал терять клиентов, поэтому нанял ИИ-ассистента. Он не спит, не просит зарплату и консультирует 24/7. Настроил всё без программистов за 1 день. Попробуй сам: <br><span class="bot-link text-purple-400"></span></p>
-      </div>
+        <!-- QR-код и ссылка -->
+        <div class="bg-gray-800 rounded-2xl p-6 text-center neon-border mb-6">
+          <h2 class="text-sm font-bold text-gray-400 uppercase mb-4 tracking-wider">Твоя реферальная ссылка</h2>
 
-      <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-bold text-green-400 bg-green-900/30 px-2 py-1 rounded">Офлайн / Друзьям</span>
-          <button onclick="copyText('post3', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+          <div class="flex justify-center mb-4">
+            <div id="qrcode" class="qr-container"></div>
+          </div>
+
+          <p class="text-xs text-purple-300 mb-3" id="botLinkDisplay">Загрузка...</p>
+
+          <!-- Кнопка копирования -->
+          <button id="copyLinkBtn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 mb-3">
+            <span>📋</span> КОПИРОВАТЬ ССЫЛКУ
+          </button>
+
+          <!-- Кнопка скачивания QR -->
+          <button id="downloadQrBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
+            <span>📥</span> СКАЧАТЬ QR-КОД
+          </button>
+
+          <!-- Кнопка поделиться -->
+          <button id="shareBtn" class="w-full mt-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-2 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
+            <span>📤</span> ПОДЕЛИТЬСЯ В TELEGRAM
+          </button>
         </div>
-        <p id="post3" class="text-sm text-gray-300">Настроил систему, которая приносит пассивный доход, пока я занимаюсь своими делами. Хочешь узнать, как работает оцифрованное сарафанное радио? Пиши моему цифровому двойнику: <br><span class="bot-link text-purple-400"></span></p>
-      </div>
+
+        <!-- Прогресс до следующего уровня -->
+        <div class="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-bold text-yellow-400">🎯 Прогресс до PRO</span>
+            <span id="progressText" class="text-xs text-gray-400">0/10</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-2">
+            <div id="progressBar" class="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">Приведи 10 активных партнёров для повышения комиссии до 50%</p>
+        </div>
+
+        <!-- Готовые посты -->
+        <div class="mb-4 text-center">
+          <h2 class="text-lg font-bold">📝 Готовые посты</h2>
+          <p class="text-xs text-gray-400">Скопируй и опубликуй в Stories или на канале</p>
+        </div>
+
+        <!-- Фильтр постов -->
+        <div class="flex gap-2 mb-4 overflow-x-auto">
+          <button onclick="filterPosts('all')" class="px-4 py-2 bg-purple-600 rounded-lg text-xs font-bold whitespace-nowrap">Все</button>
+          <button onclick="filterPosts('intrigue')" class="px-4 py-2 bg-gray-700 rounded-lg text-xs font-bold whitespace-nowrap">🎯 Интрига</button>
+          <button onclick="filterPosts('business')" class="px-4 py-2 bg-gray-700 rounded-lg text-xs font-bold whitespace-nowrap">💼 Бизнес</button>
+          <button onclick="filterPosts('offline')" class="px-4 py-2 bg-gray-700 rounded-lg text-xs font-bold whitespace-nowrap">🏪 Офлайн</button>
+          <button onclick="filterPosts('ai')" class="px-4 py-2 bg-gray-700 rounded-lg text-xs font-bold whitespace-nowrap">🤖 AI-тренд</button>
+        </div>
+
+        <div id="postsContainer">
+          <!-- Пост 1: Интрига -->
+          <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative post-card" data-category="intrigue">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-cyan-400 bg-cyan-900/30 px-2 py-1 rounded">🎯 Интрига (Stories)</span>
+              <button onclick="copyText('post1', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+            </div>
+            <p id="post1" class="text-sm text-gray-300">Пока все обсуждают нейросети, я собрал себе ИИ-клона, который работает на меня 24/7. Заходи потестить, как он общается: <br><span class="bot-link text-purple-400"></span></p>
+          </div>
+
+          <!-- Пост 2: Бизнес -->
+          <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative post-card" data-category="business">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-purple-400 bg-purple-900/30 px-2 py-1 rounded">💼 Для бизнеса</span>
+              <button onclick="copyText('post2', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+            </div>
+            <p id="post2" class="text-sm text-gray-300">Я устал терять клиентов, поэтому нанял ИИ-ассистента. Он не спит, не просит зарплату и консультирует 24/7. Настроил всё без программистов за 1 день. Попробуй сам: <br><span class="bot-link text-purple-400"></span></p>
+          </div>
+
+          <!-- Пост 3: Офлайн -->
+          <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative post-card" data-category="offline">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-green-400 bg-green-900/30 px-2 py-1 rounded">🏪 Офлайн / Друзьям</span>
+              <button onclick="copyText('post3', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+            </div>
+            <p id="post3" class="text-sm text-gray-300">Настроил систему, которая приносит пассивный доход, пока я занимаюсь своими делами. Хочешь узнать, как работает оцифрованное сарафанное радио? Пиши моему цифровому двойнику: <br><span class="bot-link text-purple-400"></span></p>
+          </div>
+
+          <!-- Пост 4: AI-тренд -->
+          <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative post-card" data-category="ai">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-pink-400 bg-pink-900/30 px-2 py-1 rounded">🤖 AI-тренд 2026</span>
+              <button onclick="copyText('post4', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+            </div>
+            <p id="post4" class="text-sm text-gray-300">2026 год: кто не использует AI, теряет деньги. Я уже автоматизировал 80% рутины через телеграм-бота. Хочешь так же? Жми: <br><span class="bot-link text-purple-400"></span></p>
+          </div>
+
+          <!-- Пост 5: Личная история -->
+          <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative post-card" data-category="intrigue">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-yellow-400 bg-yellow-900/30 px-2 py-1 rounded">📖 Личная история</span>
+              <button onclick="copyText('post5', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+            </div>
+            <p id="post5" class="text-sm text-gray-300">Месяц назад я не верил в нейросети. Сегодня мой ИИ-бот приносит $500/мес пассивно. Всё, что нужно — зарегистрироваться и настроить под себя. Стартуй здесь: <br><span class="bot-link text-purple-400"></span></p>
+          </div>
+
+          <!-- Пост 6: Для экспертов -->
+          <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700 relative post-card" data-category="business">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-blue-400 bg-blue-900/30 px-2 py-1 rounded">🎓 Для экспертов</span>
+              <button onclick="copyText('post6', this)" class="text-xs font-bold bg-gray-700 px-3 py-1.5 rounded-lg active:bg-purple-600 transition-colors">Копировать</button>
+            </div>
+            <p id="post6" class="text-sm text-gray-300">Упаковал свои знания в телеграм-бота. Теперь он продаёт мои консультации, пока я сплю. Комиссия автоматическая. Попробуй: <br><span class="bot-link text-purple-400"></span></p>
+          </div>
+        </div>
+
+        <!-- Баннеры для скачивания -->
+        <!-- ВРЕМЕННО СКРЫТО: Картинки загружаются в Storage Bucket -->
+        <div class="mb-4 text-center mt-8" style="display: none;">
+          <h2 class="text-lg font-bold">🎨 Готовые баннеры</h2>
+          <p class="text-xs text-gray-400">Скачай и используй в рекламе</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-6" style="display: none;">
+          <div class="bg-gray-800 rounded-xl p-3 border border-gray-700 text-center">
+            <div class="w-full h-24 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg mb-2 flex items-center justify-center">
+              <span class="text-2xl">🚀</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-2">Старт</p>
+            <button class="text-xs bg-gray-700 px-3 py-1 rounded-lg">Скачать</button>
+          </div>
+          <div class="bg-gray-800 rounded-xl p-3 border border-gray-700 text-center">
+            <div class="w-full h-24 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg mb-2 flex items-center justify-center">
+              <span class="text-2xl">💰</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-2">Доход</p>
+            <button class="text-xs bg-gray-700 px-3 py-1 rounded-lg">Скачать</button>
+          </div>
+          <div class="bg-gray-800 rounded-xl p-3 border border-gray-700 text-center">
+            <div class="w-full h-24 bg-gradient-to-br from-orange-600 to-red-600 rounded-lg mb-2 flex items-center justify-center">
+              <span class="text-2xl">🔥</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-2">Тренд</p>
+            <button class="text-xs bg-gray-700 px-3 py-1 rounded-lg">Скачать</button>
+          </div>
+          <div class="bg-gray-800 rounded-xl p-3 border border-gray-700 text-center">
+            <div class="w-full h-24 bg-gradient-to-br from-pink-600 to-purple-600 rounded-lg mb-2 flex items-center justify-center">
+              <span class="text-2xl">⚡</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-2">PRO</p>
+            <button class="text-xs bg-gray-700 px-3 py-1 rounded-lg">Скачать</button>
+          </div>
+        </div>
+
+        <!-- Кнопка обратной связи -->
+        <div class="text-center">
+          <a href="https://t.me/sethubble_support" target="_blank" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-purple-400 transition-colors">
+            <span>❓</span> Нужна помощь? Напиши в поддержку
+          </a>
+        </div>
+
+      </div> <!-- Конец mainContent -->
 
     </div>
 
@@ -91,44 +246,159 @@
       tg.expand();
       tg.ready();
 
-      // Получаем имя бота из URL (?bot=sethubble_biz_bot)
-      const urlParams = new URLSearchParams(window.location.search);
-      let botName = urlParams.get('bot');
-      
-      // Если по какой-то причине бота нет, ставим заглушку
-      if (!botName) {
-        botName = "sethubble_bot"; 
+      // Глобальные переменные
+      let userData = null;
+      let refLink = '';
+      let botName = '';
+
+      // ============================================================
+      // 1. Получение данных пользователя через Telegram WebApp API
+      // ============================================================
+      async function initUser() {
+        const initData = tg.initData;
+        
+        if (!initData) {
+          // Если открыто не в Telegram — показываем заглушку
+          showFallbackMode();
+          return;
+        }
+
+        try {
+          // Отправляем данные на бэкенд для валидации и получения ссылки
+          const response = await fetch('/api/get-partner-link', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-telegram-initdata': initData
+            },
+            body: JSON.stringify({ action: 'get_partner_link' })
+          });
+
+          if (!response.ok) {
+            throw new Error('API error');
+          }
+
+          const data = await response.json();
+          
+          if (data.success) {
+            userData = data.user;
+            refLink = data.refLink;
+            botName = data.botName;
+            initUI();
+          } else {
+            throw new Error(data.error || 'Unknown error');
+          }
+
+        } catch (error) {
+          console.error('Init error:', error);
+          showFallbackMode();
+        }
       }
-      
-      // Убираем @ если она случайно есть
-      botName = botName.replace('@', '');
-      const botUrl = `https://t.me/${botName}`;
 
-      // Вставляем ссылку в UI
-      document.getElementById('botLinkDisplay').textContent = botUrl;
-      document.querySelectorAll('.bot-link').forEach(el => {
-        el.textContent = botUrl;
+      // ============================================================
+      // 2. Резервный режим (если API недоступно)
+      // ============================================================
+      function showFallbackMode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        botName = urlParams.get('bot') || 'sethubble_bot';
+        botName = botName.replace('@', '');
+        refLink = `https://t.me/${botName}?start=ref_${Date.now()}`;
+        
+        userData = {
+          first_name: tg.initDataUnsafe?.user?.first_name || 'Партнёр',
+          username: tg.initDataUnsafe?.user?.username || 'user',
+          id: tg.initDataUnsafe?.user?.id || 0
+        };
+        
+        initUI();
+      }
+
+      // ============================================================
+      // 3. Инициализация UI
+      // ============================================================
+      function initUI() {
+        // Скрываем загрузку, показываем контент
+        document.getElementById('loadingBlock').classList.add('hidden');
+        document.getElementById('mainContent').classList.remove('hidden');
+
+        // Устанавливаем ссылку
+        const botUrl = refLink;
+        document.getElementById('botLinkDisplay').textContent = botUrl;
+        document.querySelectorAll('.bot-link').forEach(el => {
+          el.textContent = botUrl;
+        });
+
+        // Аватар пользователя
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+          const firstName = user.first_name || 'П';
+          document.getElementById('userAvatar').textContent = firstName[0].toUpperCase();
+          document.getElementById('userAvatar').style.backgroundImage = 'none';
+        }
+
+        // Статистика (заглушка — потом заменить на реальные данные)
+        document.getElementById('statClicks').textContent = userData?.clicks || Math.floor(Math.random() * 50);
+        document.getElementById('statEarnings').textContent = '$' + (userData?.earnings || (Math.random() * 200).toFixed(2));
+
+        // Прогресс
+        const current = userData?.referrals || Math.floor(Math.random() * 10);
+        const target = 10;
+        const percent = Math.min((current / target) * 100, 100);
+        document.getElementById('progressBar').style.width = percent + '%';
+        document.getElementById('progressText').textContent = `${current}/${target}`;
+
+        // Генерация QR-кода
+        generateQR(botUrl);
+      }
+
+      // ============================================================
+      // 4. Генерация QR-кода
+      // ============================================================
+      function generateQR(url) {
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = ''; // Очистка
+        
+        new QRCode(qrContainer, {
+          text: url,
+          width: 180,
+          height: 180,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+        });
+      }
+
+      // ============================================================
+      // 5. Копирование ссылки
+      // ============================================================
+      document.getElementById('copyLinkBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(refLink).then(() => {
+          const btn = document.getElementById('copyLinkBtn');
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '<span>✅</span> СКОПИРОВАНО';
+          btn.classList.replace('bg-gray-700', 'bg-green-600');
+          
+          if (tg.HapticFeedback) {
+            tg.HapticFeedback.notificationOccurred('success');
+          }
+
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace('bg-green-600', 'bg-gray-700');
+          }, 2000);
+        });
       });
 
-      // Генерация QR-кода
-      const qrContainer = document.getElementById('qrcode');
-      new QRCode(qrContainer, {
-        text: botUrl,
-        width: 180,
-        height: 180,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
-      });
-
-      // Логика скачивания QR-кода
+      // ============================================================
+      // 6. Скачивание QR-кода
+      // ============================================================
       document.getElementById('downloadQrBtn').addEventListener('click', () => {
-        // qrcode.js генерирует либо img, либо canvas
+        const qrContainer = document.getElementById('qrcode');
         const img = qrContainer.querySelector('img');
         const canvas = qrContainer.querySelector('canvas');
-        
+
         let imgUrl = "";
-        
+
         if (img && img.src) {
           imgUrl = img.src;
         } else if (canvas) {
@@ -142,29 +412,49 @@
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          
-          if (tg.isVersionAtLeast && tg.isVersionAtLeast("6.2")) {
-            tg.showPopup({ title: "Успешно", message: "QR-код скачан! Теперь ты можешь его распечатать." });
+
+          if (tg.showPopup) {
+            tg.showPopup({ 
+              title: "Успешно", 
+              message: "QR-код скачан! Теперь ты можешь его распечатать." 
+            });
           }
         }
       });
 
-      // Логика копирования текста
+      // ============================================================
+      // 7. Поделиться в Telegram
+      // ============================================================
+      document.getElementById('shareBtn').addEventListener('click', () => {
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent('🤖 Мой ИИ-помощник работает 24/7. Попробуй: ')}`;
+        
+        if (tg.openTelegramLink) {
+          tg.openTelegramLink(shareUrl);
+        } else {
+          window.open(shareUrl, '_blank');
+        }
+        
+        if (tg.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred('light');
+        }
+      });
+
+      // ============================================================
+      // 8. Копирование текста постов
+      // ============================================================
       function copyText(elementId, btnElement) {
         const textElement = document.getElementById(elementId);
-        // Заменяем <br> на переносы строк для копирования
         const textToCopy = textElement.innerText;
-        
+
         navigator.clipboard.writeText(textToCopy).then(() => {
-          // Визуальный отклик кнопки
           const originalText = btnElement.innerText;
           btnElement.innerText = "✅ Скопировано";
           btnElement.classList.replace("bg-gray-700", "bg-green-600");
-          
-          if (tg.isVersionAtLeast && tg.isVersionAtLeast("6.2")) {
-             tg.HapticFeedback.notificationOccurred('success');
+
+          if (tg.HapticFeedback) {
+            tg.HapticFeedback.notificationOccurred('success');
           }
-          
+
           setTimeout(() => {
             btnElement.innerText = originalText;
             btnElement.classList.replace("bg-green-600", "bg-gray-700");
@@ -173,6 +463,37 @@
           console.error('Ошибка копирования', err);
         });
       }
+
+      // ============================================================
+      // 9. Фильтр постов
+      // ============================================================
+      function filterPosts(category) {
+        const posts = document.querySelectorAll('.post-card');
+        const buttons = document.querySelectorAll('.flex.gap-2 button');
+        
+        // Обновляем активную кнопку
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-purple-600');
+          btn.classList.add('bg-gray-700');
+        });
+        event.target.classList.remove('bg-gray-700');
+        event.target.classList.add('bg-purple-600');
+        
+        // Фильтруем посты
+        posts.forEach(post => {
+          if (category === 'all' || post.dataset.category === category) {
+            post.style.display = 'block';
+          } else {
+            post.style.display = 'none';
+          }
+        });
+      }
+
+      // ============================================================
+      // Запуск инициализации
+      // ============================================================
+      initUser();
+
     </script>
   </body>
 </html>
