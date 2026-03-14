@@ -309,12 +309,20 @@
         document.getElementById('loadingBlock').classList.add('hidden');
         document.getElementById('mainContent').classList.remove('hidden');
 
-        // Устанавливаем ссылку
-        const botUrl = refLink;
-        document.getElementById('botLinkDisplay').textContent = botUrl;
+        // Убираем @ если она случайно есть
+        botName = botName.replace('@', '');
+        
+        // Формируем новую ссылку на твой роскошный лендинг
+        const landingUrl = `https://sethubble.ru/join/?ref=${botName}`;
+
+        // Вставляем ссылку в UI (теперь везде будет сайт, а не Telegram)
+        document.getElementById('botLinkDisplay').textContent = landingUrl;
         document.querySelectorAll('.bot-link').forEach(el => {
-          el.textContent = botUrl;
+          el.textContent = landingUrl;
         });
+        
+        // QR-код теперь тоже будет генерироваться для landingUrl!
+        const botUrl = landingUrl;
 
         // Аватар пользователя
         const user = tg.initDataUnsafe?.user;
