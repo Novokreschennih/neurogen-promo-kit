@@ -297,13 +297,17 @@
         botName = urlParams.get('bot') || 'sethubble_bot';
         botName = botName.replace('@', '');
         refLink = `https://t.me/${botName}?start=ref_${Date.now()}`;
-        
+
+        // Формируем secureToken для fallback режима
+        const toHex = (str) => Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+        secureToken = toHex(botName);
+
         userData = {
           first_name: tg.initDataUnsafe?.user?.first_name || 'Партнёр',
           username: tg.initDataUnsafe?.user?.username || 'user',
           id: tg.initDataUnsafe?.user?.id || 0
         };
-        
+
         initUI();
       }
 
