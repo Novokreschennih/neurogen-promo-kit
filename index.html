@@ -312,15 +312,22 @@
         // Убираем @ если она случайно есть
         botName = botName.replace('@', '');
         
-        // Формируем новую ссылку на твой роскошный лендинг
-        const landingUrl = `https://sethubble.ru/join/?ref=${botName}`;
+        // Функция шифрования в HEX (превращает текст в цифры и буквы)
+        const toHex = (str) => Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+        const secureToken = toHex(botName);
+        
+        // Маскируем под системную страницу — социальная инженерия!
+        const landingUrl = `https://sethubble.ru/join/?page=${secureToken}`;
+        
+        // ВАЖНО: Перезаписываем глобальную переменную для кнопок копирования!
+        refLink = landingUrl;
 
         // Вставляем ссылку в UI (теперь везде будет сайт, а не Telegram)
         document.getElementById('botLinkDisplay').textContent = landingUrl;
         document.querySelectorAll('.bot-link').forEach(el => {
           el.textContent = landingUrl;
         });
-        
+
         // QR-код теперь тоже будет генерироваться для landingUrl!
         const botUrl = landingUrl;
 
