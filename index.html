@@ -445,9 +445,9 @@
       // ============================================================
       document.getElementById('openMySiteBtn').addEventListener('click', () => {
         // Формируем ссылку на лендинг пользователя
-        // Лендинг использует тот же botName для идентификации
-        const landingUrl = `https://novokreschennih.github.io/neurogen-landing/?bot=${botName}`;
-        
+        // Лендинг использует page с HEX-кодированным botName
+        const landingUrl = `https://sethubble.ru/join/?page=${botName}`;
+
         if (tg.openLink) {
           tg.openLink(landingUrl);
         } else {
