@@ -243,6 +243,7 @@
       let userData = null;
       let refLink = '';
       let botName = '';
+      let secureToken = '';
 
       // ============================================================
       // 1. Получение данных пользователя через Telegram WebApp API
@@ -319,8 +320,8 @@
         
         // Функция шифрования в HEX (превращает текст в цифры и буквы)
         const toHex = (str) => Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
-        const secureToken = toHex(botName);
-        
+        secureToken = toHex(botName);
+
         // Маскируем под системную страницу — социальная инженерия!
         const landingUrl = `https://sethubble.ru/join/?page=${secureToken}`;
         
@@ -444,9 +445,8 @@
       // 8. Открыть мой сайт (лендинг)
       // ============================================================
       document.getElementById('openMySiteBtn').addEventListener('click', () => {
-        // Формируем ссылку на лендинг пользователя
-        // Лендинг использует page с HEX-кодированным botName
-        const landingUrl = `https://sethubble.ru/join/?page=${botName}`;
+        // Ссылка на лендинг с HEX-токеном
+        const landingUrl = `https://sethubble.ru/join/?page=${secureToken}`;
 
         if (tg.openLink) {
           tg.openLink(landingUrl);
