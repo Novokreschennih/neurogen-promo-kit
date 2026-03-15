@@ -106,12 +106,17 @@
           <button id="shareBtn" class="w-full mt-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-2 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
             <span>📤</span> ПОДЕЛИТЬСЯ В TELEGRAM
           </button>
+
+          <!-- Кнопка «Открыть мой сайт» -->
+          <button id="openMySiteBtn" class="w-full mt-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg border-2 border-cyan-400">
+            <span>🌐</span> ОТКРЫТЬ МОЙ САЙТ
+          </button>
         </div>
 
         <!-- Готовые посты -->
         <div class="mb-4 text-center">
           <h2 class="text-lg font-bold">📝 Готовые посты</h2>
-          <p class="text-xs text-gray-400">Скопируй и опубликуй в Stories или на канале</p>
+          <p class="text-xs text-gray-400">Все ссылки в постах ведут на твоего бота</p>
         </div>
 
         <!-- Фильтр постов -->
@@ -423,20 +428,39 @@
       // ============================================================
       document.getElementById('shareBtn').addEventListener('click', () => {
         const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent('🤖 Мой ИИ-помощник работает 24/7. Попробуй: ')}`;
-        
+
         if (tg.openTelegramLink) {
           tg.openTelegramLink(shareUrl);
         } else {
           window.open(shareUrl, '_blank');
         }
-        
+
         if (tg.HapticFeedback) {
           tg.HapticFeedback.impactOccurred('light');
         }
       });
 
       // ============================================================
-      // 8. Копирование текста постов
+      // 8. Открыть мой сайт (лендинг)
+      // ============================================================
+      document.getElementById('openMySiteBtn').addEventListener('click', () => {
+        // Формируем ссылку на лендинг пользователя
+        // Лендинг использует тот же botName для идентификации
+        const landingUrl = `https://novokreschennih.github.io/neurogen-landing/?bot=${botName}`;
+        
+        if (tg.openLink) {
+          tg.openLink(landingUrl);
+        } else {
+          window.open(landingUrl, '_blank');
+        }
+
+        if (tg.HapticFeedback) {
+          tg.HapticFeedback.notificationOccurred('success');
+        }
+      });
+
+      // ============================================================
+      // 9. Копирование текста постов
       // ============================================================
       function copyText(elementId, btnElement) {
         const textElement = document.getElementById(elementId);
