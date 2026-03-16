@@ -243,16 +243,21 @@
       // ============================================================
       async function initUser() {
         const initData = tg.initData;
-        
+
         if (!initData) {
           // Если открыто не в Telegram — показываем заглушку
           showFallbackMode();
           return;
         }
 
+        // --- ИСПРАВЛЕНИЕ: ДИНАМИЧЕСКИЙ BACKEND_URL ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const apiFromUrl = urlParams.get('api');
+        const BACKEND_URL = apiFromUrl || "https://d5dsbah1d4ju0glmp9d0.3zvepvee.apigw.yandexcloud.net";
+
         try {
           // Отправляем данные на бэкенд для валидации и получения ссылки
-          const response = await fetch('/api/get-partner-link', {
+          const response = await fetch(`${BACKEND_URL}/?action=get_partner_link`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -482,19 +487,22 @@
       }
 
       // ============================================================
-      // 9. Фильтр постов
+      // 9. Фильтр постов (ИСПРАВЛЕННЫЙ ДЛЯ IOS)
       // ============================================================
       function filterPosts(category) {
         const posts = document.querySelectorAll('.post-card');
         const buttons = document.querySelectorAll('.flex.gap-2 button');
         
-        // Обновляем активную кнопку
+        // Обновляем активную кнопку безопасно (без event.target)
         buttons.forEach(btn => {
           btn.classList.remove('bg-purple-600');
           btn.classList.add('bg-gray-700');
+          
+          if (btn.getAttribute('onclick').includes(`'${category}'`)) {
+            btn.classList.remove('bg-gray-700');
+            btn.classList.add('bg-purple-600');
+          }
         });
-        event.target.classList.remove('bg-gray-700');
-        event.target.classList.add('bg-purple-600');
         
         // Фильтруем посты
         posts.forEach(post => {
