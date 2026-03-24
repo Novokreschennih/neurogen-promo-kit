@@ -111,6 +111,11 @@
           <button id="openMySiteBtn" class="w-full mt-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg border-2 border-cyan-400">
             <span>🌐</span> ОТКРЫТЬ МОЙ САЙТ
           </button>
+
+          <!-- Кнопка «Создать PDF с QR» -->
+          <button id="createPdfBtn" class="w-full mt-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg neon-border">
+            <span>📄</span> СОЗДАТЬ ПРЕЗЕНТАЦИЮ С QR
+          </button>
         </div>
 
         <!-- Готовые посты -->
@@ -462,7 +467,30 @@
       });
 
       // ============================================================
-      // 9. Копирование текста постов
+      // 9. Создать PDF с QR-кодом (интеграция с qr2pdf)
+      // ============================================================
+      document.getElementById('createPdfBtn').addEventListener('click', () => {
+        // Базовая ссылка на приложение для генерации PDF
+        const pdfAppUrl = "https://qr2pdf.vercel.app";
+        
+        // Добавляем реферальную ссылку партнера как параметр
+        const fullUrl = `${pdfAppUrl}/?link=${encodeURIComponent(refLink)}`;
+        
+        // Открываем внутри Telegram
+        if (tg.openLink) {
+          tg.openLink(fullUrl);
+        } else {
+          window.open(fullUrl, '_blank');
+        }
+
+        // Тактильный отклик
+        if (tg.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred('light');
+        }
+      });
+
+      // ============================================================
+      // 10. Копирование текста постов
       // ============================================================
       function copyText(elementId, btnElement) {
         const textElement = document.getElementById(elementId);
@@ -487,7 +515,7 @@
       }
 
       // ============================================================
-      // 9. Фильтр постов (ИСПРАВЛЕННЫЙ ДЛЯ IOS)
+      // 11. Фильтр постов (ИСПРАВЛЕННЫЙ ДЛЯ IOS)
       // ============================================================
       function filterPosts(category) {
         const posts = document.querySelectorAll('.post-card');
