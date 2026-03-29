@@ -820,56 +820,53 @@
             // Открываем в новой вкладке для печати
             const printWindow = window.open("", "_blank");
 
-            // Формируем HTML для печати (используем конкатенацию вместо template literals)
-            const htmlContent =
-              "<!DOCTYPE html>" +
-              "<html><head>" +
-              "<title>NeuroGen Презентация - " +
-              botName +
-              "</title>" +
-              "<style>" +
-              "@page { size: A4; margin: 20mm; }" +
-              "body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }" +
-              ".container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }" +
-              "h1 { text-align: center; color: #667eea; font-size: 32px; margin-bottom: 10px; }" +
-              ".subtitle { text-align: center; color: #666; font-size: 18px; margin-bottom: 30px; }" +
-              ".qr-section { text-align: center; margin: 40px 0; }" +
-              ".qr-frame { display: inline-block; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }" +
-              ".link { color: #667eea; word-break: break-all; margin: 10px 0; }" +
-              ".benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 40px 0; }" +
-              ".benefit { background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 20px; border-radius: 15px; border-left: 4px solid #667eea; }" +
-              ".benefit h4 { color: #667eea; margin: 0 0 10px 0; font-size: 16px; }" +
-              ".benefit p { color: #666; margin: 0; font-size: 14px; }" +
-              ".cta { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 20px; text-align: center; margin: 40px 0; }" +
-              ".cta h3 { margin: 0 0 10px 0; font-size: 24px; }" +
-              ".footer { text-align: center; color: #999; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }" +
-              "@media print { body { background: white; } .container { box-shadow: none; } }" +
-              "</style></head><body>" +
-              '<div class="container">' +
-              "<h1>🚀 NeuroGen: Твой ИИ-Бизнес</h1>" +
-              '<p class="subtitle">Автоматизируй привлечение клиентов и получай пассивный доход</p>' +
-              '<div class="qr-section"><div class="qr-frame"><div id="qr"></div></div>' +
-              '<p class="link">' +
-              refLink +
-              "</p>" +
-              '<p style="color: #999; font-size: 14px;">Отсканируй QR или перейди по ссылке</p></div>' +
-              '<div class="benefits">' +
-              '<div class="benefit"><h4>💰 Пассивный доход</h4><p>Получай процент с оборота подключенных бизнесов</p></div>' +
-              '<div class="benefit"><h4>🤖 ИИ-помощник 24/7</h4><p>Бот сам продает и регистрирует клиентов</p></div>' +
-              '<div class="benefit"><h4>📈 Рост без вложений</h4><p>Клиенты приводят клиентов бесплатно</p></div>' +
-              '<div class="benefit"><h4>🔒 Безопасно</h4><p>Оплата только после получения результата</p></div>' +
-              "</div>" +
-              '<div class="cta"><h3>🎁 Начни бесплатно!</h3><p>Перейди в бота и получи готовую систему заработка</p>' +
-              '<p style="margin-top: 10px; opacity: 0.9;">Бот: @' +
-              botName +
-              "</p></div>" +
-              '<div class="footer">SetHubble × NeuroGen | Платформа партнерских программ нового поколения</div>' +
-              "</div>" +
-              '<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>' +
-              '<script>setTimeout(function() { new QRCode(document.getElementById("qr"), { text: "' +
-              refLink +
-              '", width: 150, height: 150, correctLevel: QRCode.CorrectLevel.H }); setTimeout(function() { window.print(); }, 1000); }, 100);</script>' +
-              "</body></html>";
+            // Формируем HTML для печати
+            const htmlContent = [
+              "<!DOCTYPE html>",
+              "<html><head>",
+              "<title>NeuroGen Презентация - " + botName + "</title>",
+              "<style>",
+              "@page{size:A4;margin:20mm}",
+              "body{font-family:Arial,sans-serif;margin:0;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}",
+              ".container{max-width:800px;margin:0 auto;background:white;border-radius:20px;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}",
+              "h1{text-align:center;color:#667eea;font-size:32px;margin-bottom:10px}",
+              ".subtitle{text-align:center;color:#666;font-size:18px;margin-bottom:30px}",
+              ".qr-section{text-align:center;margin:40px 0}",
+              ".qr-frame{display:inline-block;background:white;padding:20px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}",
+              ".link{color:#667eea;word-break:break-all;margin:10px 0}",
+              ".benefits{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:40px 0}",
+              ".benefit{background:linear-gradient(135deg,#667eea15 0%,#764ba215 100%);padding:20px;border-radius:15px;border-left:4px solid #667eea}",
+              ".benefit h4{color:#667eea;margin:0 0 10px 0;font-size:16px}",
+              ".benefit p{color:#666;margin:0;font-size:14px}",
+              ".cta{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:30px;border-radius:20px;text-align:center;margin:40px 0}",
+              ".cta h3{margin:0 0 10px 0;font-size:24px}",
+              ".footer{text-align:center;color:#999;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #eee}",
+              "@media print{body{background:white}.container{box-shadow:none}}",
+              "</style></head><body>",
+              '<div class="container">',
+              "<h1>🚀 NeuroGen: Твой ИИ-Бизнес</h1>",
+              '<p class="subtitle">Автоматизируй привлечение клиентов и получай пассивный доход</p>',
+              '<div class="qr-section"><div class="qr-frame"><div id="qr"></div></div>',
+              '<p class="link">' + refLink + "</p>",
+              '<p style="color:#999;font-size:14px;">Отсканируй QR или перейди по ссылке</p></div>',
+              '<div class="benefits">',
+              '<div class="benefit"><h4>💰 Пассивный доход</h4><p>Получай процент с оборота подключенных бизнесов</p></div>',
+              '<div class="benefit"><h4>🤖 ИИ-помощник 24/7</h4><p>Бот сам продает и регистрирует клиентов</p></div>',
+              '<div class="benefit"><h4>📈 Рост без вложений</h4><p>Клиенты приводят клиентов бесплатно</p></div>',
+              '<div class="benefit"><h4>🔒 Безопасно</h4><p>Оплата только после получения результата</p></div>',
+              "</div>",
+              '<div class="cta"><h3>🎁 Начни бесплатно!</h3><p>Перейди в бота и получи готовую систему заработка</p>',
+              '<p style="margin-top:10px;opacity:0.9;">Бот: @' +
+                botName +
+                "</p></div>",
+              '<div class="footer">SetHubble × NeuroGen | Платформа партнерских программ нового поколения</div>',
+              "</div>",
+              '<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"><\/script>',
+              '<script>setTimeout(function(){new QRCode(document.getElementById("qr"),{text:\'' +
+                refLink +
+                "',width:150,height:150,correctLevel:QRCode.CorrectLevel.H});setTimeout(function(){window.print()},1000)},100);<\/script>",
+              "</body></html>",
+            ].join("");
 
             printWindow.document.write(htmlContent);
             printWindow.document.close();
