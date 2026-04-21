@@ -39,14 +39,12 @@
         background-image: linear-gradient(to right, #06b6d4, #a855f7);
       }
 
-      /* Анимация загрузки */
       .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
   </head>
   <body class="min-h-screen bg-[#050505] pb-12 relative overflow-x-hidden">
     
-    <!-- Фоновые свечения -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
       <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[120px] opacity-[0.15]"></div>
       <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-600 rounded-full mix-blend-screen filter blur-[120px] opacity-[0.15]"></div>
@@ -78,7 +76,6 @@
       <!-- ОСНОВНОЙ КОНТЕНТ -->
       <div id="mainContent" class="hidden space-y-6">
         
-        <!-- ВАЖНО: БЛОК ЦЕННОСТИ СИСТЕМЫ (Что получил партнер) -->
         <div class="glass-panel rounded-3xl p-6 md:p-8">
           <h2 class="text-2xl font-black mb-2 uppercase">Твой <span class="gradient-text">Арсенал</span></h2>
           <p class="text-sm text-gray-400 mb-6">Твоя IT-империя развернута и готова к работе. Что в твоих руках прямо сейчас:</p>
@@ -140,10 +137,7 @@
                 <span>📋</span> КОПИРОВАТЬ ССЫЛКУ
               </button>
               <button id="downloadQrBtn" class="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:opacity-90 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
-                <span>📥</span> СКАЧАТЬ ДЛЯ ПЕЧАТИ
-              </button>
-              <button id="createPdfBtn" class="w-full bg-black border border-purple-500/50 hover:bg-purple-900/20 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
-                <span>📄</span> B2B ПРЕЗЕНТАЦИЯ С QR
+                <span>📥</span> СКАЧАТЬ ДЛЯ ПЕЧАТИ (ФЛАЕР)
               </button>
               <div class="grid grid-cols-2 gap-3 mt-2">
                 <button id="shareBtn" class="bg-[#2AABEE]/20 text-[#2AABEE] hover:bg-[#2AABEE]/30 border border-[#2AABEE]/30 font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
@@ -197,58 +191,88 @@
         <div class="glass-panel rounded-3xl p-6 mt-6">
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h2 class="text-xl font-bold text-white">📝 Магниты Трафика</h2>
-              <p class="text-xs text-gray-400 mt-1">Готовые посты (твоя ссылка вшита)</p>
+              <h2 class="text-xl font-bold text-white">📝 Магниты Трафика (6 постов)</h2>
+              <p class="text-xs text-gray-400 mt-1">Готовые тексты со вшитой ссылкой. Скопируй и выложи!</p>
             </div>
           </div>
 
           <!-- Фильтры -->
           <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2">
-            <button onclick="filterPosts('all')" class="px-4 py-2 bg-cyan-600 text-white rounded-xl text-xs font-bold whitespace-nowrap transition-colors">Все</button>
-            <button onclick="filterPosts('intrigue')" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors">🎯 Интрига</button>
-            <button onclick="filterPosts('business')" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors">💼 Бизнес</button>
-            <button onclick="filterPosts('offline')" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors">🏪 Офлайн</button>
+            <button onclick="filterPosts('all')" class="filter-btn px-4 py-2 bg-cyan-600 text-white rounded-xl text-xs font-bold whitespace-nowrap transition-colors" data-cat="all">Все</button>
+            <button onclick="filterPosts('intrigue')" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors" data-cat="intrigue">🎯 Интрига</button>
+            <button onclick="filterPosts('business')" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors" data-cat="business">💼 Бизнесу</button>
+            <button onclick="filterPosts('blogger')" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors" data-cat="blogger">🤳 Блогерам</button>
+            <button onclick="filterPosts('agent')" class="filter-btn px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-xs font-bold whitespace-nowrap transition-colors" data-cat="agent">🚀 Агентам</button>
           </div>
 
           <div id="postsContainer" class="space-y-4">
-            <!-- Пост 1 -->
-            <div class="bg-black/40 rounded-2xl p-5 border border-white/5 relative post-card" data-category="intrigue">
+            
+            <!-- Пост 1 (Интрига) -->
+            <div class="post-card bg-black/40 rounded-2xl p-5 border border-white/5 relative" data-category="intrigue">
               <div class="flex justify-between items-center mb-3">
-                <span class="text-[10px] font-bold text-cyan-400 bg-cyan-900/30 px-2 py-1 rounded uppercase tracking-wider">Интрига</span>
-                <button onclick="copyText('post1', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                  <span>📋</span> Копировать
-                </button>
+                <span class="text-[10px] font-bold text-cyan-400 bg-cyan-900/30 px-2 py-1 rounded uppercase tracking-wider">Интрига / Общее</span>
+                <button onclick="copyText('post1', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><span>📋</span> Копировать</button>
               </div>
               <p id="post1" class="text-sm text-gray-300 leading-relaxed">
                 Я только что собрал ИИ-клона в Telegram за 1 минуту без программирования. Он консультирует людей и строит мне партнерскую сеть 24/7, пока я занимаюсь своими делами. Старт $0. Зайди потестить, как он работает изнутри:<br><br><span class="bot-link text-cyan-400 font-medium"></span>
               </p>
             </div>
 
-            <!-- Пост 2 -->
-            <div class="bg-black/40 rounded-2xl p-5 border border-white/5 relative post-card" data-category="business">
+            <!-- Пост 2 (Бизнесу) -->
+            <div class="post-card bg-black/40 rounded-2xl p-5 border border-white/5 relative" data-category="business">
               <div class="flex justify-between items-center mb-3">
                 <span class="text-[10px] font-bold text-purple-400 bg-purple-900/30 px-2 py-1 rounded uppercase tracking-wider">Владельцам бизнеса</span>
-                <button onclick="copyText('post2', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                  <span>📋</span> Копировать
-                </button>
+                <button onclick="copyText('post2', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><span>📋</span> Копировать</button>
               </div>
               <p id="post2" class="text-sm text-gray-300 leading-relaxed">
                 Платить за рекламу до того, как пришел клиент — это прошлый век. Нашел IT-систему: твои клиенты сами приводят друзей через QR-коды, а ты платишь % только с реальных денег в кассе. Оцифрованное сарафанное радио. Посмотри, как это внедрить бесплатно:<br><br><span class="bot-link text-cyan-400 font-medium"></span>
               </p>
             </div>
 
-            <!-- Пост 3 -->
-            <div class="bg-black/40 rounded-2xl p-5 border border-white/5 relative post-card" data-category="offline">
+            <!-- Пост 3 (Блогерам) -->
+            <div class="post-card bg-black/40 rounded-2xl p-5 border border-white/5 relative" data-category="blogger">
               <div class="flex justify-between items-center mb-3">
-                <span class="text-[10px] font-bold text-green-400 bg-green-900/30 px-2 py-1 rounded uppercase tracking-wider">Блогерам</span>
-                <button onclick="copyText('post3', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                  <span>📋</span> Копировать
-                </button>
+                <span class="text-[10px] font-bold text-green-400 bg-green-900/30 px-2 py-1 rounded uppercase tracking-wider">Блогерам / Экспертам</span>
+                <button onclick="copyText('post3', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><span>📋</span> Копировать</button>
               </div>
               <p id="post3" class="text-sm text-gray-300 leading-relaxed">
-                Знаешь, что 95% твоей аудитории никогда не купит твой продукт? Я нашел способ монетизировать этих «отказников». Даешь им бесплатный доступ в IT-экосистему, и получаешь пассивный крипто-доход с их покупок у других авторов. Тестируй механику:<br><br><span class="bot-link text-cyan-400 font-medium"></span>
+                Знаешь, что 95% твоей аудитории никогда не купит твой продукт? Я нашел способ монетизировать этих «отказников». Даешь им бесплатный доступ в IT-экосистему, и получаешь пассивный крипто-доход с их покупок у других авторов. Гениальная механика, тестируй:<br><br><span class="bot-link text-cyan-400 font-medium"></span>
               </p>
             </div>
+
+            <!-- Пост 4 (Агентам) -->
+            <div class="post-card bg-black/40 rounded-2xl p-5 border border-white/5 relative" data-category="agent">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-[10px] font-bold text-pink-400 bg-pink-900/30 px-2 py-1 rounded uppercase tracking-wider">Старт с нуля / Агентам</span>
+                <button onclick="copyText('post4', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><span>📋</span> Копировать</button>
+              </div>
+              <p id="post4" class="text-sm text-gray-300 leading-relaxed">
+                Идеальная бизнес-модель: находишь любой офлайн-бизнес, даешь им мощную ИИ-систему лояльности абсолютно бесплатно и получаешь процент с их оборота всю жизнь. Нет своего продукта? Продавай чужие на автомате. Жми сюда, мой бот выдаст инструкцию:<br><br><span class="bot-link text-cyan-400 font-medium"></span>
+              </p>
+            </div>
+
+            <!-- Пост 5 (Интрига / Личная история) -->
+            <div class="post-card bg-black/40 rounded-2xl p-5 border border-white/5 relative" data-category="intrigue">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-[10px] font-bold text-yellow-400 bg-yellow-900/30 px-2 py-1 rounded uppercase tracking-wider">Личная история</span>
+                <button onclick="copyText('post5', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><span>📋</span> Копировать</button>
+              </div>
+              <p id="post5" class="text-sm text-gray-300 leading-relaxed">
+                Еще недавно я думал, что для IT-бизнеса нужны миллионы и команда кодеров. Оказалось, достаточно Telegram и правильной платформы. Настроил автоворонку, подключил крипто-кошелек и запустил партнерку. Без воздуха и казино — только реальный товарный оборот. Зацени:<br><br><span class="bot-link text-cyan-400 font-medium"></span>
+              </p>
+            </div>
+
+            <!-- Пост 6 (Бизнесу / Коротко) -->
+            <div class="post-card bg-black/40 rounded-2xl p-5 border border-white/5 relative" data-category="business">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-[10px] font-bold text-blue-400 bg-blue-900/30 px-2 py-1 rounded uppercase tracking-wider">Коротко (Для шапки профиля)</span>
+                <button onclick="copyText('post6', this)" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><span>📋</span> Копировать</button>
+              </div>
+              <p id="post6" class="text-sm text-gray-300 leading-relaxed">
+                Тот самый ИИ-бот, который строит мне партнерскую сеть 24/7. Забери такого же бесплатно за 1 минуту:<br><span class="bot-link text-cyan-400 font-medium"></span>
+              </p>
+            </div>
+
           </div>
         </div>
 
@@ -300,10 +324,8 @@
             refLink = data.refLink;
             botName = data.botName;
             
-            // === ИНЖЕКТ ДАННЫХ ИЗ БД ===
-            // Мы прокинули пользователя, берем его статус (bought_tripwire приходит из YDB, если ты его добавишь в выдачу API, либо используем заглушку)
-            // Допустим API /get_partner_link возвращает is_pro: true/false. Если нет, имитируем логику по доходу:
-            userData.is_pro = data.user.is_pro || false; 
+            // Проверка статуса PRO (tripwire) из базы (если бэкенд не отдает, фолбэк на false)
+            userData.is_pro = data.user.bought_tripwire || data.user.is_pro || false; 
 
             initUI();
           } else {
@@ -360,13 +382,11 @@
 
         // === ПОДСВЕТКА ТАРИФА (FREE vs PRO) ===
         if (userData.is_pro) {
-          // Включаем бейджик PRO
           document.getElementById("tariff-pro").classList.add("neon-border", "bg-purple-900/20");
           document.getElementById("badge-pro").classList.remove("hidden");
-          document.getElementById("btn-upgrade-pro").classList.add("hidden"); // Скрываем кнопку покупки
+          document.getElementById("btn-upgrade-pro").classList.add("hidden");
           document.getElementById("tariff-free").classList.add("opacity-50");
         } else {
-          // Включаем бейджик FREE
           document.getElementById("tariff-free").classList.add("border-green-500/50", "bg-green-900/10");
           document.getElementById("badge-free").classList.remove("hidden");
         }
@@ -402,29 +422,104 @@
         });
       });
 
+      // === ГЕНЕРАЦИЯ КРАСИВОГО ПЕЧАТНОГО ФЛАЕРА А4 ===
       document.getElementById("downloadQrBtn").addEventListener("click", () => {
         const qrContainer = document.getElementById("qrcode");
+        
         setTimeout(() => {
           const canvas = qrContainer.querySelector("canvas");
           if (canvas) {
             const imgUrl = canvas.toDataURL("image/png");
             const printWindow = window.open("", "_blank");
+            
+            // Профессиональный HTML-шаблон для флаера А4
             const htmlContent = `
-              <!DOCTYPE html><html><head><title>NeuroGen QR</title>
-              <style>
-                @page{size:A4;margin:15mm}
-                body{font-family:Arial,sans-serif;text-align:center;padding:50px;}
-                .qr-frame{display:inline-block;padding:20px;border:2px solid #000;border-radius:20px;margin-bottom:20px;}
-                h1{font-size:36px;margin-bottom:10px;}
-                p{font-size:20px;color:#666;}
-              </style></head><body>
-                <h1>Отсканируй для запуска</h1>
-                <div class="qr-frame"><img src="${imgUrl}" style="width:300px;height:300px;"/></div>
-                <p>Нейросеть NeuroGen</p>
-              </body></html>`;
+              <!DOCTYPE html>
+              <html lang="ru">
+              <head>
+                <meta charset="UTF-8">
+                <title>NeuroGen & SetHubble Flyer</title>
+                <style>
+                  @page { size: A4; margin: 0; }
+                  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #ffffff; color: #111111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                  .flyer { width: 210mm; min-height: 297mm; box-sizing: border-box; padding: 50px 60px; display: flex; flex-direction: column; background: #fff; }
+                  
+                  /* Шапка */
+                  .header { text-align: center; border-bottom: 5px solid #8b5cf6; padding-bottom: 25px; margin-bottom: 35px; }
+                  .header h1 { font-size: 46px; font-weight: 900; text-transform: uppercase; color: #000; margin: 0 0 15px 0; line-height: 1.1; letter-spacing: -1px;}
+                  .header h1 span { color: #8b5cf6; }
+                  .header h2 { font-size: 22px; font-weight: 600; color: #444; margin: 0; line-height: 1.4; }
+                  
+                  /* Центр (QR) */
+                  .content { display: flex; flex-direction: column; align-items: center; flex-grow: 1; }
+                  .qr-wrapper { background: #fff; border: 10px solid #000; padding: 25px; border-radius: 30px; margin-bottom: 40px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+                  .qr-wrapper img { width: 320px; height: 320px; display: block; margin: 0 auto; }
+                  .qr-wrapper .scan-text { font-size: 28px; font-weight: 900; margin: 20px 0 0 0; text-transform: uppercase; color: #000; letter-spacing: 1px;}
+                  
+                  /* Блок преимуществ */
+                  .features { width: 100%; }
+                  .features h3 { font-size: 28px; text-align: center; margin-bottom: 25px; color: #000; font-weight: 800; text-transform: uppercase;}
+                  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+                  .card { border: 3px solid #f3f4f6; padding: 25px; border-radius: 20px; background: #fafafa; }
+                  .card h4 { font-size: 22px; margin: 0 0 10px 0; color: #000; display: flex; align-items: center; gap: 10px; font-weight: 800;}
+                  .card p { font-size: 17px; margin: 0; color: #555; line-height: 1.5; font-weight: 500;}
+                  
+                  /* Подвал */
+                  .footer { margin-top: auto; text-align: center; background: #000; color: #fff; padding: 30px 20px; border-radius: 20px; }
+                  .footer h2 { margin: 0 0 10px 0; font-size: 26px; font-weight: 900; text-transform: uppercase;}
+                  .footer p { margin: 0; font-size: 18px; opacity: 0.9; font-weight: 500;}
+                </style>
+              </head>
+              <body>
+                <div class="flyer">
+                  <div class="header">
+                    <h1>Твой ИИ-Клон зарабатывает<br><span>Пока ты спишь</span></h1>
+                    <h2>SaaS-платформа SetHubble: Оцифруй сарафанное радио<br>и получай пассивный доход в USDT</h2>
+                  </div>
+                  
+                  <div class="content">
+                    <div class="qr-wrapper">
+                      <img src="${imgUrl}" alt="QR Code"/>
+                      <p class="scan-text">НАВЕДИ КАМЕРУ ДЛЯ ЗАПУСКА</p>
+                    </div>
+                    
+                    <div class="features">
+                      <h3>ЧТО ТЫ ПОЛУЧАЕШЬ БЕСПЛАТНО:</h3>
+                      <div class="grid">
+                        <div class="card">
+                          <h4>🤖 Мультиканальный ИИ</h4>
+                          <p>Твой личный бот в Telegram и VK. Он сам отвечает на вопросы, консультирует и продает 24/7 без твоего участия.</p>
+                        </div>
+                        <div class="card">
+                          <h4>💰 Права перепродажи</h4>
+                          <p>Получай до 50% с личных продаж + пассивный доход до 5 уровней в глубину со всей твоей партнерской сети.</p>
+                        </div>
+                        <div class="card">
+                          <h4>🏢 Офлайн-Экспансия (O2O)</h4>
+                          <p>Получай процент с оборота реальных бизнесов (СТО, кафе, салоны). Клиенты сканируют код — ты зарабатываешь.</p>
+                        </div>
+                        <div class="card">
+                          <h4>🧠 Нейросети NeuroGen</h4>
+                          <p>Бесплатный доступ к ИИ-инструментам: генерация продающих сайтов, написание скриптов и сценариев для вирусных видео.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="footer">
+                    <h2>СТАРТ АБСОЛЮТНО БЕСПЛАТНО И БЕЗ ПРОГРАММИРОВАНИЯ</h2>
+                    <p>Отсканируй QR-код выше и запусти свой IT-бизнес ровно за 1 минуту</p>
+                  </div>
+                </div>
+              </body>
+              </html>
+            `;
+            
             printWindow.document.write(htmlContent);
             printWindow.document.close();
-            setTimeout(() => printWindow.print(), 1000);
+            
+            // Задержка для рендера графики перед печатью
+            setTimeout(() => { printWindow.print(); }, 800);
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
           }
         }, 100);
@@ -463,19 +558,25 @@
 
       function filterPosts(category) {
         const posts = document.querySelectorAll(".post-card");
-        const buttons = document.querySelectorAll(".flex.gap-2 button");
+        const buttons = document.querySelectorAll(".filter-btn");
 
+        // Подсветка кнопок
         buttons.forEach((btn) => {
           btn.classList.remove("bg-cyan-600", "text-white");
           btn.classList.add("bg-white/5");
-          if (btn.getAttribute("onclick").includes(`'${category}'`)) {
+          if (btn.dataset.cat === category) {
             btn.classList.remove("bg-white/5");
             btn.classList.add("bg-cyan-600", "text-white");
           }
         });
 
+        // Показ постов
         posts.forEach((post) => {
-          post.style.display = (category === "all" || post.dataset.category === category) ? "block" : "none";
+          if (category === "all" || post.dataset.category === category) {
+            post.style.display = "block";
+          } else {
+            post.style.display = "none";
+          }
         });
       }
 
