@@ -6,6 +6,7 @@
     <title>Promo-Kit | NeuroGen Partner Dashboard</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключаем генератор QR кодов -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
@@ -39,12 +40,14 @@
         background-image: linear-gradient(to right, #06b6d4, #a855f7);
       }
 
+      /* Анимация загрузки */
       .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
   </head>
   <body class="min-h-screen bg-[#050505] pb-12 relative overflow-x-hidden">
     
+    <!-- Фоновые свечения -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
       <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[120px] opacity-[0.15]"></div>
       <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-600 rounded-full mix-blend-screen filter blur-[120px] opacity-[0.15]"></div>
@@ -70,10 +73,10 @@
       <!-- Блок загрузки -->
       <div id="loadingBlock" class="glass-panel rounded-2xl p-8 text-center neon-border mb-6">
         <div class="animate-spin inline-block w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full mb-3"></div>
-        <p class="text-sm text-cyan-400 loading-pulse font-bold tracking-wider uppercase">Синхронизация с ядром...</p>
+        <p id="loadingText" class="text-sm text-cyan-400 loading-pulse font-bold tracking-wider uppercase">Синхронизация с ядром...</p>
       </div>
 
-      <!-- ОСНОВНОЙ КОНТЕНТ -->
+      <!-- ОСНОВНОЙ КОНТЕНТ (скрыт до загрузки) -->
       <div id="mainContent" class="hidden space-y-6">
         
         <div class="glass-panel rounded-3xl p-6 md:p-8">
@@ -138,6 +141,9 @@
               </button>
               <button id="downloadQrBtn" class="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:opacity-90 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg">
                 <span>📥</span> СКАЧАТЬ ДЛЯ ПЕЧАТИ (ФЛАЕР)
+              </button>
+              <button id="createPdfBtn" class="w-full bg-black border border-purple-500/50 hover:bg-purple-900/20 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                <span>📄</span> B2B ПРЕЗЕНТАЦИЯ С QR
               </button>
               <div class="grid grid-cols-2 gap-3 mt-2">
                 <button id="shareBtn" class="bg-[#2AABEE]/20 text-[#2AABEE] hover:bg-[#2AABEE]/30 border border-[#2AABEE]/30 font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
@@ -284,7 +290,7 @@
       </div> <!-- /mainContent -->
     </div>
 
-    <!-- JS ЛОГИКА -->
+    <!-- JS ЛОГИКА С ПУЛЕНЕПРОБИВАЕМЫМ РЕЖИМОМ -->
     <script>
       const tg = window.Telegram.WebApp;
       tg.expand();
@@ -298,7 +304,7 @@
       async function initUser() {
         const initData = tg.initData;
         if (!initData) {
-          showFallbackMode();
+          showFallbackMode("Запуск вне Telegram");
           return;
         }
 
@@ -307,6 +313,10 @@
         const BACKEND_URL = apiFromUrl || "https://d5dsbah1d4ju0glmp9d0.3zvepvee.apigw.yandexcloud.net";
 
         try {
+          // Устанавливаем таймаут 8 секунд для fetch
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
+
           const response = await fetch(`${BACKEND_URL}/?action=get_partner_link`, {
             method: "POST",
             headers: {
@@ -314,84 +324,100 @@
               "x-telegram-initdata": initData,
             },
             body: JSON.stringify({ action: "get_partner_link" }),
+            signal: controller.signal
           });
+          
+          clearTimeout(timeoutId);
 
-          if (!response.ok) throw new Error("API error");
+          if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
           const data = await response.json();
 
           if (data.success) {
-            userData = data.user;
-            refLink = data.refLink;
-            botName = data.botName;
+            // Безопасное присвоение
+            userData = data.user || {};
+            refLink = data.refLink || "";
+            botName = data.botName || "sethubble_bot";
             
-            // Проверка статуса PRO (tripwire) из базы (если бэкенд не отдает, фолбэк на false)
-            userData.is_pro = data.user.bought_tripwire || data.user.is_pro || false; 
+            // Защита от undefined
+            userData.is_pro = userData.bought_tripwire || userData.is_pro || false; 
 
             initUI();
           } else {
-            throw new Error(data.error);
+            throw new Error(data.error || "Неизвестная ошибка API");
           }
         } catch (error) {
           console.error("Init error:", error);
-          showFallbackMode();
+          showFallbackMode(error.message);
         }
       }
 
-      function showFallbackMode() {
+      function showFallbackMode(reason = "") {
+        console.warn("Включен резервный режим. Причина:", reason);
         const urlParams = new URLSearchParams(window.location.search);
         botName = urlParams.get("bot") || "sethubble_bot";
-        botName = botName.replace("@", "");
         
-        const toHex = (str) => Array.from(str).map((c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
-        secureToken = toHex(botName);
-
+        // Безопасный replace
+        if (botName) botName = botName.replace("@", "");
+        
         userData = {
           first_name: tg.initDataUnsafe?.user?.first_name || "Партнёр",
           clicks: 0,
           earnings: "0.00",
           is_pro: false // Фолбэк = FREE
         };
+        
         initUI();
       }
 
       function initUI() {
-        document.getElementById("loadingBlock").classList.add("hidden");
-        document.getElementById("mainContent").classList.remove("hidden");
+        try {
+          document.getElementById("loadingBlock").classList.add("hidden");
+          document.getElementById("mainContent").classList.remove("hidden");
 
-        botName = botName.replace("@", "");
-        const toHex = (str) => Array.from(str).map((c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
-        secureToken = toHex(botName);
+          if (botName) botName = botName.replace("@", "");
+          
+          const toHex = (str) => Array.from(str).map((c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
+          secureToken = toHex(botName || "demo");
 
-        // Landing URL
-        const landingUrl = `https://sethubble.ru/join/?page=${secureToken}`;
-        refLink = landingUrl;
+          // Landing URL
+          const landingUrl = `https://sethubble.ru/join/?page=${secureToken}`;
+          refLink = landingUrl;
 
-        // Вставка ссылок
-        document.getElementById("botLinkDisplay").textContent = landingUrl;
-        document.querySelectorAll(".bot-link").forEach((el) => { el.textContent = landingUrl; });
+          // Вставка ссылок
+          document.getElementById("botLinkDisplay").textContent = landingUrl;
+          document.querySelectorAll(".bot-link").forEach((el) => { el.textContent = landingUrl; });
 
-        // Аватар
-        if (userData.first_name) {
-          document.getElementById("userAvatar").textContent = userData.first_name[0].toUpperCase();
-          document.getElementById("userAvatar").style.backgroundImage = "none";
+          // Аватар (безопасное извлечение первой буквы)
+          if (userData && userData.first_name && userData.first_name.length > 0) {
+            document.getElementById("userAvatar").textContent = userData.first_name.charAt(0).toUpperCase();
+            document.getElementById("userAvatar").style.backgroundImage = "none";
+          }
+
+          // Статистика
+          document.getElementById("statClicks").textContent = userData?.clicks || 0;
+          document.getElementById("statEarnings").textContent = "$" + (userData?.earnings || "0.00");
+
+          // === ПОДСВЕТКА ТАРИФА (FREE vs PRO) ===
+          if (userData?.is_pro) {
+            document.getElementById("tariff-pro").classList.add("neon-border", "bg-purple-900/20");
+            document.getElementById("badge-pro").classList.remove("hidden");
+            document.getElementById("btn-upgrade-pro").classList.add("hidden");
+            document.getElementById("tariff-free").classList.add("opacity-50");
+          } else {
+            document.getElementById("tariff-free").classList.add("border-green-500/50", "bg-green-900/10");
+            document.getElementById("badge-free").classList.remove("hidden");
+          }
+
+          // Защита генерации QR кода
+          if (typeof QRCode !== 'undefined') {
+            generateQR(landingUrl);
+          } else {
+            document.getElementById("qrcode").innerHTML = "<p style='color:black;font-size:12px;'>Ошибка загрузки генератора</p>";
+          }
+        } catch (e) {
+          console.error("Ошибка при отрисовке интерфейса:", e);
+          document.getElementById("loadingBlock").innerHTML = `<p class="text-red-500 font-bold">Критическая ошибка интерфейса: ${e.message}</p>`;
         }
-
-        // Статистика
-        document.getElementById("statClicks").textContent = userData.clicks || 0;
-        document.getElementById("statEarnings").textContent = "$" + (userData.earnings || "0.00");
-
-        // === ПОДСВЕТКА ТАРИФА (FREE vs PRO) ===
-        if (userData.is_pro) {
-          document.getElementById("tariff-pro").classList.add("neon-border", "bg-purple-900/20");
-          document.getElementById("badge-pro").classList.remove("hidden");
-          document.getElementById("btn-upgrade-pro").classList.add("hidden");
-          document.getElementById("tariff-free").classList.add("opacity-50");
-        } else {
-          document.getElementById("tariff-free").classList.add("border-green-500/50", "bg-green-900/10");
-          document.getElementById("badge-free").classList.remove("hidden");
-        }
-
-        generateQR(landingUrl);
       }
 
       function generateQR(url) {
